@@ -1,6 +1,6 @@
 # Pepsi's UI Library
 My old UI library. Could use plenty of optimizations.
-
+# DOCUMENTATION IS SUPERSEDED BY [https://actualmasteroogway.github.io/pepsi-user-interface/](https://actualmasteroogway.github.io/pepsi-user-interface/)
 ## Table of Contents
 - [Configuration](#configuration)
   - [Introduction](#introduction)
@@ -42,7 +42,7 @@ My old UI library. Could use plenty of optimizations.
     - [Search Box Functions](#search-box-functions)
   - [Creating a Colorpicker](#creating-a-colorpicker)
     - [Whats a Colorpicker](#whats-a-colorpicker)
-    - [colorpicker Functions](#colorpicker-functions)
+    - [Colorpicker Functions](#colorpicker-functions)
   - [Creating a Persistence](#creating-a-persistence)
     - [Whats a Persistence](#whats-a-persistence)
     - [Persistence Functions](#persistence-functions)
@@ -75,22 +75,20 @@ local Library, Flags, Subs = loadstring(game:GetObjects("rbxassetid://7657867786
 
 ### Library Functions
 
-#### [CreateWindow](#creating-a-window)
+#### [:CreateWindow](#creating-a-window)
 
-Creates a Window [User Interface](https://create.roblox.com/docs/ui) the user can interact with
-
-See [Creating a Window](#creating-a-window) for Code Snippet!
+Creates a [Window](#windows) [User Interface](https://create.roblox.com/docs/ui) the user can interact with
 
 ### Useful Tips when working with the Ui Library
 
 The Library has many different custom made functions perfected for the best optimization (not really), such as
-  - Library.Players: Instance\<Players\>: (game.Players)
-  - Library.LP: Instance\<Player\>: (Local Player)
-  - Library.Unload: \<void\> function(\<void\>): (Unloads all of the [Windows created](#creating-a-window))
-  - Library.ResetAll: \<void\> function(\<void\>): (Resets the values of all Elements to their default ones, that were set in the configs)
-  - Library.signals: \<table\>: (A table with all the RBXScriptConnections, the library has made. Feel free to add your own too. Automaticall disconnects after the Library Unloaded)
-  - Library.UnloadCallback: \<void\> function(\<void\>): (A function that gets called post unloading the UI Library)
-  - Library.Subs: \<table\>: (A table with many more different kind of Functions in it. Library.Subs and Suby are the same assuming you booted the Library using [the Code Snippet](#booting-the-library))
+  - Library.Players: ```Library.Players: Instance\<Players\>``` (game.Players)
+  - Library.LP: ```Library.LP: Instance\<Player\>```: (Local Player)
+  - Library.Unload: ```Library.Unload(): \<void\> function(\<void\>)``` (Unloads all of the [Windows created](#creating-a-window))
+  - Library.ResetAll: ```Library.ResetAll(): \<void\> function(\<void\>)``` (Resets the values of all Elements to their default ones, that were set in the configs)
+  - Library.signals: ```Library.signals: \<table\>``` (A table with all the RBXScriptConnections the library has made. Feel free to add your own too. Automatically disconnects post library unloading)
+  - Library.UnloadCallback: ```Library.UnloadCallback: \<void\> function(\<void\>)``` (A function that gets called post unloading the UI Library)
+  - Library.Subs: ```Library.Subs: \<table\>``` (A table with many more different kind of Functions in it. Library.Subs and Suby are the same assuming you booted the Library using [the Code Snippet](#booting-the-library))
 
 ## Windows
 
