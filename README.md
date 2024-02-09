@@ -1,6 +1,6 @@
 # Pepsi's UI Library
-My old UI library. Could use plenty of optimizations.
-# DOCUMENTATION IS SUPERSEDED BY [https://actualmasteroogway.github.io/pepsi-user-interface/](https://actualmasteroogway.github.io/pepsi-user-interface/)
+[Pepsi's](https://github.com/Pepsied-5229/) old UI library. Could use plenty of optimizations.
+# DOCUMENTATION IS SUPERSEDED BY [https://actualmasteroogway.github.io/docs/pepsi-user-interface/](https://actualmasteroogway.github.io/docs/pepsi-user-interface/)
 ## Table of Contents
 - [Configuration](#configuration)
   - [Introduction](#introduction)
