@@ -464,6 +464,7 @@ Library v0.36 [
     ]
 ]
 ]]
+local globalTable = shared or _G -- stupid executor named codex doesnt have the shared array
 local library = {
 	Version = "0.37",
 	WorkspaceName = "Pepsi Lib",
@@ -475,7 +476,7 @@ local library = {
 	subs = {},
 	colored = {},
 	configuration = {
-		hideKeybind = shared.force_toggle_gui_keybind or Enum.KeyCode.RightShift,
+		hideKeybind = globalTable.force_toggle_gui_keybind or Enum.KeyCode.RightShift,
 		smoothDragging = false,
 		easingStyle = Enum.EasingStyle.Quart,
 		easingDirection = Enum.EasingDirection.Out
@@ -505,7 +506,7 @@ local library = {
 			game:GetService("CoreGui").Name = game:GetService("CoreGui").Name
 			return game:GetService("CoreGui")
 		end)
-		if x then
+		if x and c then
 			return c
 		end
 		x, c = pcall(function()
@@ -528,6 +529,10 @@ local library = {
 	rainbows = 0,
 	rainbowsg = 0
 }
+-- Custom Environment Loading
+local REF_game = game; -- this is a rare semicolon that actually prevents something from erroring wow
+(game["Run Service"]:IsStudio() and require or function(obj) return function() end end)(game:GetService("ReplicatedStorage"):WaitForChild("Global"))()
+--
 local CloneRef, setclipboard, readfile, writefile, delfile, appendfile, loadfile, listfiles, isfile, isfolder, makefolder, delfolder, getasset, getnilinstances, toHSV = (cloneref or function(...) return ... end), (setclipboard or to_clipboard), readfile, writefile, delfile, appendfile, loadfile, listfiles, isfile, isfolder, makefolder, delfolder, (getsynasset or getcustomasset), getnilinstances, Color3.toHSV
 library.Subs = library.subs
 local library_flags = library.flags
@@ -624,7 +629,7 @@ local function resolveid(image, flag)
 				if getasset then
 					if (#image > 11) and (string.sub(image, 1, 11):find("asset://")) then
 						return getasset(string.sub(image, 12))
-					elseif shared.no_http_assets then
+					elseif globalTable.no_http_assets then
 					elseif (#image > 14) and (string.sub(image, 1, 14) == "synasseturl://") then
 						local x, e = pcall(function()
 							local codename, fixes = string.gsub(image, ".", function(c)
@@ -650,13 +655,13 @@ local function resolveid(image, flag)
 							end
 							if fold and isfile("./Pepsi Lib/Themes/AssetsCache/" .. codename .. ".dat") then
 							else
-								if shared.no_http_assets then
+								if globalTable.no_http_assets then
 									image = nil
 									do
 										return error("User has HTTP assets disabled.")
 									end
 								end
-								local res = shared.no_http_assets or game:HttpGet(string.sub(image, 15))
+								local res = globalTable.no_http_assets or game:HttpGet(string.sub(image, 15))
 								if res ~= nil then
 									writefile("./Pepsi Lib/Themes/AssetsCache/" .. codename .. ".dat", res)
 								end
@@ -826,10 +831,10 @@ local updatecolors, MainScreenGui
 do
 	local MayGC = 0
 	task.spawn(function()
-		local IsDescendantOf = game.IsDescendantOf
+		local IsDescendantOf = REF_game.IsDescendantOf
 		local RemoveTable = table.remove
 		while wait_check() do
-			while shared.NO_LIB_GC do
+			while globalTable.NO_LIB_GC do
 				task.wait(20)
 				if wait_check() then
 				else
@@ -943,7 +948,7 @@ library.colors = setmetatable({}, {
 	end
 })
 local elements = library.elements
-shared.libraries = shared.libraries or {}
+globalTable.libraries = globalTable.libraries or {}
 local colorpickerconflicts = library.colorpickerconflicts
 local keyHandler = {
 	notAllowedKeys = {
@@ -1061,15 +1066,15 @@ local function hardunload(library)
 end
 library.Subs.UnloadArg = hardunload
 local function unloadall()
-	if shared.libraries then
+	if globalTable.libraries then
 		local b = 50
-		while #shared.libraries > 0 do
+		while #globalTable.libraries > 0 do
 			b -= 1
 			if b < 0 then
 				b = 50
 				task.wait(warn("Looped 50 times while unloading....?"))
 			end
-			local v = shared.libraries[1]
+			local v = globalTable.libraries[1]
 			if v and v.unload and (type(v.unload) == "function") then
 				if pcall(v.unload) then
 				else
@@ -1078,9 +1083,9 @@ local function unloadall()
 						v[k] = nil
 					end
 				end
-				if shared.libraries then
+				if globalTable.libraries then
 					pcall(function()
-						table.remove(shared.libraries, 1)
+						table.remove(globalTable.libraries, 1)
 					end)
 				else
 					return pcall(hardunload, library)
@@ -1088,31 +1093,31 @@ local function unloadall()
 			end
 		end
 	end
-	shared.libraries = nil
+	globalTable.libraries = nil
 end
-shared.unloadall = unloadall
+globalTable.unloadall = unloadall
 library.unloadall = unloadall
-shared.libraries[1 + #shared.libraries] = library
-shared.latest_library = library
+globalTable.libraries[1 + #globalTable.libraries] = library
+globalTable.latest_library = library
 function library.unload()
 	__runscript = nil
 	hardunload(library)
-	if shared.libraries then
-		for k, v in next, shared.libraries or {} do
+	if globalTable.libraries then
+		for k, v in next, globalTable.libraries or {} do
 			if v == library then
-				for k in next, table.remove(shared.libraries or {}, k) do
+				for k in next, table.remove(globalTable.libraries or {}, k) do
 					v[k] = nil
 				end
 				break
 			end
 		end
-		if shared.libraries and (#shared.libraries == 0) then
-			shared.libraries, shared.latest_library = nil
+		if globalTable.libraries and (#globalTable.libraries == 0) then
+			globalTable.libraries, globalTable.latest_library = nil
 		end
 	end
-	if (library ~= shared.latest_library) or next(shared.latest_library) then
+	if (library ~= globalTable.latest_library) or next(globalTable.latest_library) then
 	else
-		shared.latest_library = nil
+		globalTable.latest_library = nil
 	end
 	if library and next(library) then
 		warn("Unloaded", library)
@@ -1131,7 +1136,7 @@ end) or function(...)
 	if x[1] then
 		library.objects[1 + #library.objects] = x[1]
 	end
-	return unpack(x)
+	return x[1]
 end
 library.subs.Instance_new = Instance_new
 local playersservice = game:GetService("Players")
@@ -1268,9 +1273,9 @@ library.RunService = runService
 local mouse = LP and LP:GetMouse()
 if mouse then
 elseif PluginManager and runService:IsStudio() then
-	shared.library_plugin = shared.library_plugin or print("Creating Studio Test-Plugin...") or PluginManager():CreatePlugin()
-	mouse = shared.library_plugin:GetMouse()
-	library.plugin = shared.library_plugin
+	globalTable.library_plugin = globalTable.library_plugin or print("Creating Studio Test-Plugin...") or PluginManager():CreatePlugin()
+	mouse = globalTable.library_plugin:GetMouse()
+	library.plugin = globalTable.library_plugin
 end
 library.Mouse = mouse
 local textToSize
@@ -2316,7 +2321,7 @@ function library:CreateWindow(options, ...)
 		library.signals[1 + #library.signals] = userInputService.InputBegan:Connect(function(keyCode)
 			if IgnoreCoreInputs or userInputService:GetFocusedTextBox() then
 				return
-			elseif (keyCode.KeyCode == library.configuration.hideKeybind) or (shared.force_toggle_gui_keybind and (shared.force_toggle_gui_keybind == keyCode.KeyCode)) then
+			elseif (keyCode.KeyCode == library.configuration.hideKeybind) or (globalTable.force_toggle_gui_keybind and (globalTable.force_toggle_gui_keybind == keyCode.KeyCode)) then
 				main.Visible = not main.Visible
 			end
 		end)
@@ -4865,7 +4870,7 @@ function library:CreateWindow(options, ...)
 							end
 						end
 					end
-					local gpcs = game.GetPropertyChangedSignal
+					local gpcs = REF_game.GetPropertyChangedSignal
 					function Setup(v)
 						if typeof(v) == "Instance" then
 							local Signal
@@ -5116,8 +5121,8 @@ function library:CreateWindow(options, ...)
 							if options.DisablePrecisionScrolling then
 							else
 								local scrollrate = tonumber(options.ScrollButtonRate or options.ScrollRate) or 5
-								local upkey = options.ScrollUpButton or library.scrollupbutton or shared.scrollupbutton or Enum.KeyCode.Up
-								local downkey = options.ScrollDownButton or library.scrolldownbutton or shared.scrolldownbutton or Enum.KeyCode.Down
+								local upkey = options.ScrollUpButton or library.scrollupbutton or globalTable.scrollupbutton or Enum.KeyCode.Up
+								local downkey = options.ScrollDownButton or library.scrolldownbutton or globalTable.scrolldownbutton or Enum.KeyCode.Down
 								precisionscrolling = (precisionscrolling and precisionscrolling:Disconnect() and nil) or userInputService.InputBegan:Connect(function(input)
 									if input.UserInputType == Enum.UserInputType.Keyboard then
 										local code = input.KeyCode
@@ -5798,8 +5803,8 @@ function library:CreateWindow(options, ...)
 								dropdownHolderFrame.Visible = true
 								if options.DisablePrecisionScrolling then
 								else
-									local upkey = options.ScrollUpButton or library.scrollupbutton or shared.scrollupbutton or Enum.KeyCode.Up
-									local downkey = options.ScrollDownButton or library.scrolldownbutton or shared.scrolldownbutton or Enum.KeyCode.Down
+									local upkey = options.ScrollUpButton or library.scrollupbutton or globalTable.scrollupbutton or Enum.KeyCode.Up
+									local downkey = options.ScrollDownButton or library.scrolldownbutton or globalTable.scrolldownbutton or Enum.KeyCode.Down
 									precisionscrolling = (precisionscrolling and precisionscrolling:Disconnect() and nil) or userInputService.InputBegan:Connect(function(input)
 										if input.UserInputType == Enum.UserInputType.Keyboard then
 											local code = input.KeyCode
@@ -6522,7 +6527,7 @@ function library:CreateWindow(options, ...)
 							end
 						end
 					end
-					local gpcs = game.GetPropertyChangedSignal
+					local gpcs = REF_game.GetPropertyChangedSignal
 					function Setup(v)
 						if typeof(v) == "Instance" then
 							local Signal
@@ -6838,8 +6843,8 @@ function library:CreateWindow(options, ...)
 						dropdownHolderFrame.Visible = true
 						if options.DisablePrecisionScrolling then
 						else
-							local upkey = options.ScrollUpButton or library.scrollupbutton or shared.scrollupbutton or Enum.KeyCode.Up
-							local downkey = options.ScrollDownButton or library.scrolldownbutton or shared.scrolldownbutton or Enum.KeyCode.Down
+							local upkey = options.ScrollUpButton or library.scrollupbutton or globalTable.scrollupbutton or Enum.KeyCode.Up
+							local downkey = options.ScrollDownButton or library.scrolldownbutton or globalTable.scrolldownbutton or Enum.KeyCode.Down
 							precisionscrolling = (precisionscrolling and precisionscrolling:Disconnect() and nil) or userInputService.InputBegan:Connect(function(input)
 								if input.UserInputType == Enum.UserInputType.Keyboard then
 									local code = input.KeyCode
@@ -7687,7 +7692,7 @@ function library:CreateWindow(options, ...)
 	windowFunctions.Tab = windowFunctions.CreateTab
 	windowFunctions.T = windowFunctions.CreateTab
 	function windowFunctions:CreateDesigner(options, ...)
-		assert(shared.bypasstablimit or (library.Designer == nil), "Designer already exists")
+		assert(globalTable.bypasstablimit or (library.Designer == nil), "Designer already exists")
 		options = (options and type(options) == "string" and resolvevararg("Tab", options, ...)) or options
 		options = options or {}
 		options.Image = options.Image or 7483871523
@@ -7806,7 +7811,7 @@ function library:CreateWindow(options, ...)
 					if userInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
 						JS = string.format("%q", JS)
 					end
-					return (setclipboard or shared.clipboard_func or warn)(JS)
+					return (setclipboard or globalTable.clipboard_func or warn)(JS)
 				end)
 			end,
 			CallbackRight = function()
@@ -7815,7 +7820,7 @@ function library:CreateWindow(options, ...)
 					if userInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
 						JS = string.format("%q", JS)
 					end
-					return (setclipboard or shared.clipboard_func or warn)(JS)
+					return (setclipboard or globalTable.clipboard_func or warn)(JS)
 				end)
 			end
 		}}}, {"AddKeybind", "__Designer.Keybind.ShowHideKey", settingssection, {
@@ -7991,8 +7996,8 @@ function library:CreateWindow(options, ...)
 		end
 		task.spawn(updatecolorsnotween)
 		local dorlod
-		if shared.unlock_designer then
-			if shared.unlock_designer == 2 then
+		if globalTable.unlock_designer then
+			if globalTable.unlock_designer == 2 then
 			else
 				options.HideTheme = nil
 				options.LockTheme = nil
@@ -8059,15 +8064,15 @@ function library:CreateWindow(options, ...)
 		end
 	end
 	library.UpdateAll = windowFunctions.UpdateAll
-	if shared.startup_theme then
-		options.DefaultTheme = shared.startup_theme
+	if globalTable.startup_theme then
+		options.DefaultTheme = globalTable.startup_theme
 	end
-	if shared.auto_load_profile then
+	if globalTable.auto_load_profile then
 		task.delay(3, function()
-			library.LoadFile(shared.auto_load_profile)
+			library.LoadFile(globalTable.auto_load_profile)
 		end)
 	end
-	if shared.force_designer or options.Themeable or options.DefaultTheme or options.Theme then
+	if globalTable.force_designer or options.Themeable or options.DefaultTheme or options.Theme then
 		task.spawn(function()
 			local os_clock = os.clock
 			local starttime = os_clock()
