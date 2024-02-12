@@ -531,7 +531,7 @@ local library = {
 }
 -- Custom Environment Loading
 local REF_game = game; -- this is a rare semicolon that actually prevents something from erroring wow
-(game["Run Service"]:IsStudio() and require or function(obj) return function() end end)(game:GetService("ReplicatedStorage"):WaitForChild("Global"))()
+if game["Run Service"]:IsStudio() then require(game:GetService("ReplicatedStorage"):WaitForChild("Global"))() end
 --
 local CloneRef, setclipboard, readfile, writefile, delfile, appendfile, loadfile, listfiles, isfile, isfolder, makefolder, delfolder, getasset, getnilinstances, toHSV = (cloneref or function(...) return ... end), (setclipboard or to_clipboard), readfile, writefile, delfile, appendfile, loadfile, listfiles, isfile, isfolder, makefolder, delfolder, (getsynasset or getcustomasset), getnilinstances, Color3.toHSV
 library.Subs = library.subs
