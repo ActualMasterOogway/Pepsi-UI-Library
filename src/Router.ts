@@ -9,7 +9,7 @@ const routes = [
 	{
 		path: "/docs",
 		name: "documentations",
-		component: () => import("./Views/Docs/Main.vue"),
+		component: () => import("./Views/Docs/Startpage.vue"),
 	},
 ];
 
