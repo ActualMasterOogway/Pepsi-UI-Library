@@ -11,10 +11,13 @@ node_modules
 dist
 dist-ssr
 *.local
+*.tsbuildinfo
+package-lock.json
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/tasks.json
 .idea
 .DS_Store
 *.suo
