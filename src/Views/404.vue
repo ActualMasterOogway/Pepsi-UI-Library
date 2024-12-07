@@ -1,4 +1,0 @@
-<template>
-    i will make this later go back for now pls
-    <a href="https://actualmasteroogway.github.io/">click here 🥶</a>
-</template>
